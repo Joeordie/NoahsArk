@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 /**
@@ -21,9 +22,17 @@ public class AnimalBuilder {
     //Set up arrayList of Animal classed objects
     ArrayList<Animal> ark = new ArrayList();
     String pause;
+    Animal workingAnimal;
     
+    public void main(){
+        //created a main loop to get rid of the recursion. 
+        while (true){
+            userMenu();
+        }
+    }
     
-    public void printMenu(){
+        
+    public void userMenu() {
         System.out.println("Welcome to Animal Builder!"
         + "\nPlease chose what you want to do:\n"
         + "1. create animal\n"
@@ -33,38 +42,47 @@ public class AnimalBuilder {
         + "5. last working ark!\n"
         + "6. Write out to file.\n"
         + "7. Exit");
-        String choice = input.nextLine();
-        userMenu(choice);
-    }
-    
-    public void userMenu(String choice) {
+        
+         String choice = input.nextLine();
+        
         JsonMajig tablet = new JsonMajig();
         if(choice.equals("1")|choice.equals("2")|choice.equals("3")|choice.equals("4")|choice.equals("5")|choice.equals("6")|choice.equals("7")){
                 switch (choice) {
                 case "1":
                         buildCreature();
-                        printMenu();
+                        
                         break;
                 case "2":
-                        deleteCreature(animalChooser());
-                        printMenu();
+                    // moved the validity check out of the animalchoosermethod. 
+                        workingAnimal = animalChooser();
+                        if (workingAnimal == null){
+                            System.out.println("Sorry that wasn't recognized. Try again.");
+                            workingAnimal = animalChooser();
+                        }
+                        deleteCreature(workingAnimal);
+                        
                         break;
                 case "3":
                         arkManifest();
-                        printMenu();
+                        
                         break;
                 case "4":
-                        discription(animalChooser());
-                        printMenu();
+                        workingAnimal = animalChooser();
+                        if (workingAnimal == null){
+                            System.out.println("Sorry that wasn't recognized. Try again.");
+                            workingAnimal = animalChooser();
+                        }
+                        discription(workingAnimal);
+                        
                         break;
                 case "5":
                         ark = tablet.readFile();
                         arkManifest();
-                        printMenu();
+                        
                         break;
                 case "6":
                         tablet.arkWriteOut(ark);
-                        printMenu();
+                        
                         break;
                 case "7":
                         AnimalKingdom2.exit();
@@ -74,26 +92,23 @@ public class AnimalBuilder {
         }
         else{
             System.out.println("that is not an allowed input!\nTry again.");
-            printMenu();
         }
     }
     
     public Animal animalChooser(){
         //A simple method that allows for a specific animal in the ark to be chosen then passed to delete or print functions. 
-        Animal workingAnimal = null;
-        System.out.println("\nPlease type the name of one of the following animals.");
+        workingAnimal = null;
+        
         arkManifest();
-        System.out.println("\n");
+       
+        System.out.println("\nPlease type the name of one of the above animals.");
         String AnimalName = input.nextLine();
         for (Animal name: ark){
             if (AnimalName.equals(name.name)){
                 workingAnimal = name;
             } 
         }
-        if (workingAnimal == null){
-            System.out.println("Sorry that wasn't recognized. Try again.");
-            animalChooser();
-        }
+       
         return workingAnimal;
     }
     
@@ -167,10 +182,12 @@ public class AnimalBuilder {
     }
     
     private void arkManifest(){
-        //print out the creatures on the ark.
+        //print out the creatures on the ark. now with Iterator class. 
        System.out.println("\nNow on board are:\n");
-        for(Animal name: ark){
-            System.out.println(name.name);
+       Iterator itr = ark.iterator();
+        while(itr.hasNext()){
+            Animal localAnimal = (Animal) itr.next();
+            System.out.println(localAnimal.name);
         }  
         System.out.println("\nhit any key to continue.\n");
         pause = input.nextLine();
@@ -241,17 +258,19 @@ public class AnimalBuilder {
         for (Map.Entry<String, String> entry : stats.entrySet()){
             if (entry.getKey() != "name"){
                 System.out.println(entry.getKey()+": "+entry.getValue());
-            }
+            } 
+            
         }
-        System.out.println("\nany key to continue.\n\n");
+        System.out.println("\nany key to continue.\n");
         pause = input.nextLine();
         
     }
 
     private void deleteCreature(Animal workingAnimal) {
         //get that thing off the ark. 
-        ark.remove(workingAnimal);
-        System.out.println("\n"+workingAnimal.name + "has been removed from the ark.\n\n\n");
+        Animal local = workingAnimal;
+        ark.remove(local);
+        System.out.println("\n"+local.name + " has been removed from the ark.\n");
     }
         
 }
