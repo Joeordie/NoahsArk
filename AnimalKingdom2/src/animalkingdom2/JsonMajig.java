@@ -51,6 +51,7 @@ public class JsonMajig {
         String stringOut = JSONark.toString();
         //write to file. 
         writeFile(stringOut);
+        System.out.println("\nWritten!\n");
     }
      
     public ArrayList<Animal> readFile(){
